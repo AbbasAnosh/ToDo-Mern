@@ -5,6 +5,7 @@ import cors from "cors";
 
 import router from "./routes/todos.js";
 import signUp from "./routes/signUp.js";
+import signIn from "./routes/signIn.js";
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 //routes
 app.use("/api/todos", router);
 app.use("/api/signup", signUp);
+app.use("/api/signin", signIn);
 
 const connection = process.env.api_key;
 const port = process.env.PORT || 5000;
