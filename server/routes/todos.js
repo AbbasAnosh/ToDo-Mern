@@ -2,11 +2,12 @@ import todoModel from "../model/todo.js";
 import express from "express";
 const router = express.Router();
 import Joi from "joi";
-
-router.get("/", async (req, res) => {
+import auth from "../middleware/auth.js";
+router.get("/", auth, async (req, res) => {
   try {
     const todos = await todoModel.find().sort({ date: -1 });
     res.send(todos);
+    console.log(req.user);
   } catch (error) {
     res.status(500).send(error.message);
     console.log(error.message);
