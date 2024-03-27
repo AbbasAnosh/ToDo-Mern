@@ -1,11 +1,9 @@
 import Joi from "joi";
-import express from "express";
 import bcrypt from "bcryptjs";
 import userModel from "../model/userModel.js";
 import jwt from "jsonwebtoken";
-const router = express.Router();
 
-router.post("/", async (req, res) => {
+export const SignIn = async (req, res) => {
   const schema = Joi.object({
     email: Joi.string().min(8).max(300).email().required(),
     password: Joi.string().min(8).max(300).required(),
@@ -36,6 +34,4 @@ router.post("/", async (req, res) => {
     res.status(400).send(error.message);
     console.log(error.message);
   }
-});
-
-export default router;
+};

@@ -1,9 +1,7 @@
 import todoModel from "../model/todo.js";
-import express from "express";
-const router = express.Router();
 import Joi from "joi";
-import auth from "../middleware/auth.js";
-router.get("/", auth, async (req, res) => {
+
+export const GetTodo = async (req, res) => {
   try {
     const todos = await todoModel.find().sort({ date: -1 });
     res.send(todos);
@@ -12,9 +10,9 @@ router.get("/", auth, async (req, res) => {
     res.status(500).send(error.message);
     console.log(error.message);
   }
-});
+};
 
-router.post("/", async (req, res) => {
+export const PostTodo = async (req, res) => {
   const schema = Joi.object({
     id: Joi.string(),
     name: Joi.string().min(2).max(300).required(),
@@ -27,7 +25,6 @@ router.post("/", async (req, res) => {
 
   const { name, author, id, completed, date } = req.body;
 
-  //creating a new document from the request body
   let newTodo = new todoModel({
     name,
     author,
@@ -35,7 +32,7 @@ router.post("/", async (req, res) => {
     completed,
     date,
   });
-  //saving the new document to the database & sending it back to the client
+
   try {
     newTodo = await newTodo.save();
     res.send(newTodo);
@@ -44,9 +41,9 @@ router.post("/", async (req, res) => {
     res.status(500).send(error.message);
     console.log(error.message);
   }
-});
+};
 
-router.put("/:id", async (req, res) => {
+export const PutTodo = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(2).max(300).required(),
     author: Joi.string().min(2).max(40),
@@ -75,9 +72,9 @@ router.put("/:id", async (req, res) => {
     res.status(500).send(error.message);
     console.log(error.message);
   }
-});
+};
 
-router.patch("/:id", async (req, res) => {
+export const PatchTodo = async (req, res) => {
   try {
     const todo = await todoModel.findById(req.params.id);
     if (!todo) return res.status(404).send("todo not found)");
@@ -91,18 +88,9 @@ router.patch("/:id", async (req, res) => {
     res.status(500).send(error.message);
     console.log(error.message);
   }
-});
+};
 
-router.delete("/:id", async (req, res) => {
-  /* delteOne() 
-    deleteMany()
-    findByIdAndDeleted()
-    */
-  //1.  const todos = await todoModel.deleteOne({ completed: true })
-  // res.send(todos);
-
-  //2. const todos = await todoModel.deleteMany({ completed: true })
-  // res.send(todos);
+export const DeleteTodo = async (req, res) => {
   try {
     const todo = await todoModel.findById(req.params.id);
     if (!todo) return res.status(404).send("todo not found)");
@@ -113,6 +101,4 @@ router.delete("/:id", async (req, res) => {
     res.status(500).send(error.message);
     console.log(error.message);
   }
-});
-
-export default router;
+};

@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 
-import router from "./routes/todos.js";
-import signUp from "./routes/signUp.js";
-import signIn from "./routes/signIn.js";
+import router from "./routes/todos.route.js";
+import signUp from "./routes/signUp.route.js";
+import signIn from "./routes/signIn.route.js";
 
 dotenv.config();
 const app = express();

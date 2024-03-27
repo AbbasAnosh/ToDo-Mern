@@ -2,6 +2,7 @@ import React from "react";
 import { Box } from "@chakra-ui/react";
 import Hero from "./components/Hero";
 import CreateTodo from "./components/CreateTodo";
+import TodoList from "./components/TodoList";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
       <Hero />
       <Box zIndex={1} width="100%" px="1.5rem" maxWidth="3xl" my="auto">
         <CreateTodo />
+        <TodoList />
 
         <Box
           mt="1.5rem"

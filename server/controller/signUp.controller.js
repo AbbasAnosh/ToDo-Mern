@@ -1,10 +1,8 @@
 import Joi from "joi";
-import express from "express";
-const router = express.Router();
 import userModel from "../model/userModel.js";
 import bcrypt from "bcryptjs";
 
-router.post("/", async (req, res) => {
+export const SignUp = async () => {
   const schema = Joi.object({
     name: Joi.string().min(3).max(40).required(),
     email: Joi.string().min(8).max(300).email().required(),
@@ -31,6 +29,4 @@ router.post("/", async (req, res) => {
     res.status(400).send(error.message);
     console.log(error.message);
   }
-});
-
-export default router;
+};
