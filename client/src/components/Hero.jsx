@@ -26,7 +26,7 @@ export default function Hero() {
           `url(/background/bg-image3-${colorMode}.jpg)`,
         ]}
         style={{
-          width: "100vw",
+          width: "100%",
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "none",
@@ -48,8 +48,8 @@ export default function Hero() {
         Todo
       </Heading>
       <HStack>
-        <SignIn />
-        <SignUp />
+        {/* <SignIn />
+        <SignUp /> */}
         <ThemeToggle />
       </HStack>
     </Flex>

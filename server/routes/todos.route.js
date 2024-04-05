@@ -9,7 +9,7 @@ import {
   PatchTodo,
   DeleteTodo,
 } from "../controller/todo.controller.js";
-router.get("/", auth, GetTodo);
+router.get("/", GetTodo);
 router.post("/", PostTodo);
 router.put("/:id", PutTodo);
 router.patch("/:id", PatchTodo);
