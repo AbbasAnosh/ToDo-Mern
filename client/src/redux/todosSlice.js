@@ -3,6 +3,8 @@ import axios from "axios";
 
 const initialState = [];
 
+const apiUrl = "http://localhost:3000/api/todos";
+
 export const addTodo = createAsyncThunk("todos/addTodo", async (todo) => {
   try {
     const response = await axios.post("http://localhost:3000/api/todos", todo);
@@ -14,15 +16,13 @@ export const addTodo = createAsyncThunk("todos/addTodo", async (todo) => {
 
 export const updateTodo = createAsyncThunk(
   "todos/updateTodo",
-  async (updatedTodo) => {
+  async ({ updatedTodo, id }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/api/todos/${updatedTodo.id}`,
-        updatedTodo
-      );
+      const response = await axios.put(`${apiUrl}/${_id}`, updatedTodo);
+      console.log(response.data);
       return response.data;
     } catch (error) {
-      throw error;
+      return rejectWithValue(error.response?.data);
     }
   }
 );
@@ -40,11 +40,12 @@ const todoSlice = createSlice({
         console.error("Error adding todo:", action.error.message);
       })
       .addCase(updateTodo.fulfilled, (state, action) => {
-        const index = state.findIndex(
-          (todo) => todo._id === action.payload._id
+        const updatedTodo = action.payload;
+        const todoIndex = state.findIndex(
+          (todo) => todo._id === updatedTodo._id
         );
-        if (index !== -1) {
-          state[index] = action.payload;
+        if (todoIndex !== -1) {
+          state[todoIndex] = updatedTodo;
         }
       })
       .addCase(updateTodo.rejected, (state, action) => {

@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AddIcon } from "@chakra-ui/icons";
 import { FormControl, IconButton, Input } from "@chakra-ui/react";
 import CheckBox from "./CheckBox";
-import { useDispatch } from "react-redux";
 
 import axios from "axios";
-import { addTodo } from "../redux/todosSlice";
 
-const CreateTodo = ({ todo, setTodo }) => {
-  const dispatch = useDispatch();
-  // const [todo, setTodo] = useState({
-  //   name: "",
-  //   completed: false,
-  // });
+const CreateTodo = () => {
+  const [todo, setTodo] = useState({
+    name: "",
+    completed: false,
+  });
 
   const handleChange = (e) => {
     setTodo({
@@ -24,7 +21,15 @@ const CreateTodo = ({ todo, setTodo }) => {
 
   const handleSubmit = async (e) => {
     // e.preventDefault();
-    dispatch(addTodo({ ...todo, date: new Date() }));
+
+    const newData = {
+      name: todo.name,
+      completed: todo.completed,
+      date: new Date(),
+    };
+    axios.post("http://localhost:3000/api/todos", newData).then((response) => {
+      console.log(response.status, response.data);
+    });
     setTodo({
       name: "",
       completed: false,

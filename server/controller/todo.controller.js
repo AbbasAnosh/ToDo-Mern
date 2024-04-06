@@ -12,6 +12,17 @@ export const GetTodo = async (req, res) => {
   }
 };
 
+export const Gettod = async (req, res) => {
+  try {
+    const todos = await todoModel.findById();
+    res.send(todos);
+    console.log(req.user);
+  } catch (error) {
+    res.status(500).send(error.message);
+    console.log(error.message);
+  }
+};
+
 export const PostTodo = async (req, res) => {
   const schema = Joi.object({
     id: Joi.string(),

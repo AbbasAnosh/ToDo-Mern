@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Stack, HStack, VStack, StackDivider } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { HStack, VStack, StackDivider } from "@chakra-ui/react";
 import { Box, Text, IconButton } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
-import { addTodo, updateTodo } from "../redux/todosSlice";
-// import { useSelector } from 'react-redux';
+
 import moment from "moment";
 
 import {
@@ -26,25 +24,75 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import CheckBox from "./CheckBox";
-import { useGetTodosQuery } from "../api/getData";
 
-const TodoList = ({ todo, setTodo }) => {
+const TodoList = () => {
+  const [ToDo, setToDo] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [data, setData] = useState({ name: "", completed: false });
+
+  const getTodos = () => {
+    axios.get("http://localhost:3000/api/todos").then((response) => {
+      setToDo(response.data);
+    });
+  };
+
+  useEffect(() => {
+    getTodos();
+  }, []);
+
+  const handleChange = (e) => {
+    setData((data) => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e, id) => {
+    // e.preventDefault();/
+
+    axios
+      .put(`http://localhost:3000/api/todos/${id}`, data)
+      .then((res) => {
+        setData({ name: "", completed: "", date: new Date() });
+        console.log(res.data.message, "updated successfully");
+      })
+      .catch((err) => {
+        console.log("Failed to update todo");
+        console.log(err.message);
+      });
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:3000/api/todos/${id}`);
+    setToDo((data) => {
+      return data.filter((todo) => todo._id !== id);
+    });
+  };
+
   // const todos = useSelector(selectTodos);
 
   // const todo = useSelector((state) => state.todos);
   // const dispatch = useDispatch();
+  // const [selectedTodo, setSelectedTodo] = useState(null);
 
-  const [getPost, setGetPost] = useState([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const handleEditClick = (todo) => {
+  //   setSelectedTodo(todo);
+  //   onOpen();
+  // };
 
-  const { data: todos, error, isLoading } = useGetTodosQuery();
+  // const handleSaveTodo = () => {
+  //   dispatch(updateTodo({ id: selectedTodo._id, updatedTodo: selectedTodo }));
+  //   onClose();
+  // };
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-  if (error) {
-    return <p>Error fetching todos: {error.message}</p>;
-  }
+  // const [getPost, setGetPost] = useState([]);
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // const { data: todos, error, isLoading } = useGetTodosQuery();
+
+  // if (isLoading) {
+  //   return <p>Loading...</p>;
+  // }
+  // if (error) {
+  //   return <p>Error fetching todos: {error.message}</p>;
+  // }
 
   // useEffect(() => {
   //   axios
@@ -75,9 +123,9 @@ const TodoList = ({ todo, setTodo }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
     >
-      {todos.map((todo) => (
+      {ToDo.map((todo) => (
         <Box
-          key={todo.id}
+          key={todo._id}
           p={4}
           borderWidth="1px"
           margin={2}
@@ -121,14 +169,18 @@ const TodoList = ({ todo, setTodo }) => {
                   <ModalBody>
                     <form
                       id="new-note"
-                      onSubmit={(event) => {
-                        event.preventDefault();
-                        alert("Submitted");
+                      onSubmit={(e) => {
+                        handleSubmit(e, todo._id);
                       }}
                     >
                       <FormControl>
                         <FormLabel>Todo</FormLabel>
-                        <Input type="email" />
+                        <Input
+                          type="text"
+                          name="name"
+                          placeholder="Create a new todo..."
+                          onChange={handleChange}
+                        />
                       </FormControl>
                     </form>
                   </ModalBody>
@@ -145,7 +197,7 @@ const TodoList = ({ todo, setTodo }) => {
             <IconButton
               icon={<DeleteIcon />}
               colorScheme="red"
-              onClick={() => deletePost(todo.id)}
+              onClick={() => handleDelete(todo._id)}
             />
           </Box>
         </Box>

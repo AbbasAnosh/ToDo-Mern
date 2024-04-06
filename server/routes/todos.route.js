@@ -8,8 +8,10 @@ import {
   PutTodo,
   PatchTodo,
   DeleteTodo,
+  Gettod,
 } from "../controller/todo.controller.js";
 router.get("/", GetTodo);
+router.get("/:id", Gettod);
 router.post("/", PostTodo);
 router.put("/:id", PutTodo);
 router.patch("/:id", PatchTodo);
