@@ -1,8 +1,6 @@
-import { Box, Flex, Heading, useColorMode, HStack } from "@chakra-ui/react";
+import { Box, Flex, useColorMode } from "@chakra-ui/react";
 import React from "react";
-import ThemeToggle from "./ThemeToggle";
-import SignIn from "./SignIn";
-import SignUp from "./SignUp";
+import Navbar from "./Navbar";
 
 export default function Hero() {
   const { colorMode } = useColorMode();
@@ -10,7 +8,6 @@ export default function Hero() {
   return (
     <Flex
       mb="2rem"
-      height="200px"
       w="100%"
       px="1.5rem"
       justifyContent="space-between"
@@ -36,22 +33,6 @@ export default function Hero() {
           top: "0",
         }}
       />
-      <Heading
-        letterSpacing={"1rem"}
-        textTransform="uppercase"
-        color="white"
-        backgroundColor="teal"
-        paddingX="10px"
-        paddingY="5px"
-        borderRadius={5}
-      >
-        Todo
-      </Heading>
-      <HStack>
-        {/* <SignIn />
-        <SignUp /> */}
-        <ThemeToggle />
-      </HStack>
     </Flex>
   );
 }

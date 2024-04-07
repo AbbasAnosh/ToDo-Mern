@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { HStack, VStack, StackDivider } from "@chakra-ui/react";
-import { Box, Text, IconButton } from "@chakra-ui/react";
+import {
+  HStack,
+  VStack,
+  StackDivider,
+  useToast,
+  Box,
+  Text,
+  Textarea,
+  IconButton,
+  useColorModeValue,
+  Badge,
+  Button,
+  Stack,
+} from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import axios from "axios";
 
 import moment from "moment";
-
 import {
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
-  Button,
-} from "@chakra-ui/react";
-import {
   Modal,
   ModalOverlay,
   ModalContent,
@@ -22,186 +30,232 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  SlideFade,
 } from "@chakra-ui/react";
 import CheckBox from "./CheckBox";
 
-const TodoList = () => {
-  const [ToDo, setToDo] = useState([]);
+const TodoList = ({ isCreated }) => {
+  const [toDos, setToDos] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [data, setData] = useState({ name: "", completed: false });
+  const [data, setData] = useState({ name: "", completed: false, id: null });
+  const toast = useToast();
+  const bg = useColorModeValue("white", "gray.800");
 
   const getTodos = () => {
-    axios.get("http://localhost:3000/api/todos").then((response) => {
-      setToDo(response.data);
-    });
+    axios
+      .get(`http://localhost:3000/api/todos?page=${currentPage}&limit=3`)
+      .then((response) => {
+        setToDos(response?.data?.todos);
+        setTotalPages(response.data.totalPages);
+      });
   };
 
   useEffect(() => {
+    if (isCreated) {
+      getTodos();
+    }
+  }, [isCreated]);
+
+  useEffect(() => {
     getTodos();
-  }, []);
+  }, [currentPage]);
 
   const handleChange = (e) => {
-    setData((data) => ({ ...data, [e.target.name]: e.target.value }));
+    setData((data) => ({
+      ...data,
+      [e.target.name]: e.target.value,
+      description:
+        e.target.name === "description" ? e.target.value : data.description,
+    }));
   };
 
-  const handleSubmit = (e, id) => {
-    // e.preventDefault();/
+  const handleEdit = (todo) => {
+    setData({
+      name: todo.name,
+      description: todo.description,
+      completed: todo.completed,
+      id: todo._id,
+    });
+    onOpen();
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { id, ...updateData } = data;
 
     axios
-      .put(`http://localhost:3000/api/todos/${id}`, data)
+      .put(`http://localhost:3000/api/todos/${id}`, updateData)
       .then((res) => {
-        setData({ name: "", completed: "", date: new Date() });
-        console.log(res.data.message, "updated successfully");
+        setData({ name: "", description: "", completed: false, id: null });
+        getTodos();
+        onClose();
+        toast({
+          title: "Todo updated.",
+          description: "Your todo has been updated successfully.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       })
       .catch((err) => {
-        console.log("Failed to update todo");
-        console.log(err.message);
+        toast({
+          title: "Error updating todo.",
+          description: "Failed to update todo.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       });
   };
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/api/todos/${id}`);
-    setToDo((data) => {
-      return data.filter((todo) => todo._id !== id);
+    axios.delete(`http://localhost:3000/api/todos/${id}`).then(() => {
+      getTodos();
+      toast({
+        title: "Todo deleted.",
+        description: "Your todo has been deleted successfully.",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
     });
   };
 
-  // const todos = useSelector(selectTodos);
-
-  // const todo = useSelector((state) => state.todos);
-  // const dispatch = useDispatch();
-  // const [selectedTodo, setSelectedTodo] = useState(null);
-
-  // const handleEditClick = (todo) => {
-  //   setSelectedTodo(todo);
-  //   onOpen();
-  // };
-
-  // const handleSaveTodo = () => {
-  //   dispatch(updateTodo({ id: selectedTodo._id, updatedTodo: selectedTodo }));
-  //   onClose();
-  // };
-
-  // const [getPost, setGetPost] = useState([]);
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // const { data: todos, error, isLoading } = useGetTodosQuery();
-
-  // if (isLoading) {
-  //   return <p>Loading...</p>;
-  // }
-  // if (error) {
-  //   return <p>Error fetching todos: {error.message}</p>;
-  // }
-
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3000/api/todos")
-  //     .then((response) => {
-  //       setGetPost(response.data);
-  //       console.log(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, []);
-
-  // const deletePost = async (id) => {
-  //   try {
-  //     await axios.delete(`http://localhost:3000/api/todos/${id}`);
-  //     console.log("Post deleted successfully", id);
-  //     setGetPost(
-  //       getPost.filter((post) => post._id.toString() !== id.toString())
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   return (
     <motion.Box
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      layout
     >
-      {ToDo.map((todo) => (
-        <Box
-          key={todo._id}
-          p={4}
-          borderWidth="1px"
-          margin={2}
-          borderRadius="lg"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+      {toDos.map((todo) => (
+        <SlideFade in={true} offsetY="20px" key={todo._id}>
           <Box
+            p={5}
+            shadow="md"
+            borderWidth="1px"
+            margin={4}
+            borderRadius="lg"
+            bg={bg}
             display="flex"
-            flexDirection="column"
-            justifyContent=""
+            justifyContent="space-between"
             alignItems="center"
+            layout
           >
-            <HStack>
-              <CheckBox />
-              <Text>{todo.name}</Text>
-            </HStack>
-            <VStack
-              divider={<StackDivider borderColor="gray.200" />}
-              spacing={4}
-              maxWidth={"85%"}
-            >
-              <Text>Author: Abbas Anosh</Text>
-              <Text>Date: {moment(todo.date).format("MMM Do YY")}</Text>
-            </VStack>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <HStack maxWidth="100%" marginBottom="4">
+                <CheckBox isChecked={todo.completed} />
+                <VStack
+                  alignItems="self-start"
+                  divider={<StackDivider borderColor="gray.200" />}
+                >
+                  <Text as={todo.completed ? "s" : ""}>{todo.name}</Text>
+                  <Text as={todo.completed ? "s" : ""}>{todo.description}</Text>
+                </VStack>
+              </HStack>
+              <VStack
+                divider={<StackDivider borderColor="gray.200" />}
+                spacing={2}
+                align="stretch"
+              >
+                <Badge colorScheme="green">Author: Abbas Anosh</Badge>
+                <Badge colorScheme="blue">
+                  Date: {moment(todo.date).format("MMM Do YY")}
+                </Badge>
+              </VStack>
+            </Box>
+            <Box>
+              <Stack
+                spacing={2}
+                direction="column"
+                align="center"
+                justifyContent="center"
+              >
+                <IconButton
+                  icon={<EditIcon />}
+                  colorScheme="blue"
+                  onClick={() => handleEdit(todo)}
+                  aria-label="Edit Todo"
+                />
+                <IconButton
+                  icon={<DeleteIcon />}
+                  colorScheme="red"
+                  onClick={() => handleDelete(todo._id)}
+                  aria-label="Delete Todo"
+                />
+              </Stack>
+            </Box>
           </Box>
-          <Box>
-            <>
-              <IconButton
-                icon={<EditIcon />}
-                colorScheme="blue"
-                onClick={onOpen}
-                mr={2}
-              />
-              <Modal isOpen={isOpen} motionPreset="scale" onClose={onClose}>
-                <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(0px) " />
-                <ModalContent>
-                  <ModalHeader>Update the todo</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <form
-                      id="new-note"
-                      onSubmit={(e) => {
-                        handleSubmit(e, todo._id);
-                      }}
-                    >
-                      <FormControl>
-                        <FormLabel>Todo</FormLabel>
-                        <Input
-                          type="text"
-                          name="name"
-                          placeholder="Create a new todo..."
-                          onChange={handleChange}
-                        />
-                      </FormControl>
-                    </form>
-                  </ModalBody>
-
-                  <ModalFooter>
-                    <Button type="submit" form="new-note">
-                      Submit
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </>
-
-            <IconButton
-              icon={<DeleteIcon />}
-              colorScheme="red"
-              onClick={() => handleDelete(todo._id)}
-            />
-          </Box>
-        </Box>
+        </SlideFade>
       ))}
+
+      <Box
+        display="flex"
+        justifyContent="center"
+        marginTop="10"
+        alignItems="center"
+      >
+        <Button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          isDisabled={currentPage <= 1}
+        >
+          Previous
+        </Button>
+        <Text marginX="4">
+          Page {currentPage} of {totalPages}
+        </Text>
+        <Button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          isDisabled={currentPage >= totalPages}
+        >
+          Next
+        </Button>
+      </Box>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Update Todo</ModalHeader>
+          <ModalCloseButton />
+          <form onSubmit={handleSubmit}>
+            <ModalBody>
+              <FormControl>
+                <FormLabel>Name</FormLabel>
+                <Input
+                  name="name"
+                  onChange={handleChange}
+                  value={data.name}
+                  placeholder="Todo name"
+                />
+              </FormControl>
+
+              <Text mb="8px" mt="8px">
+                Description
+              </Text>
+              <Textarea
+                name="description"
+                placeholder="Here is a sample placeholder"
+                size="sm"
+                onChange={handleChange}
+                value={data.description}
+              />
+            </ModalBody>
+
+            <ModalFooter>
+              <Stack direction="row" align="center">
+                <Button colorScheme="blue" mr={1} onClick={onClose}>
+                  Close
+                </Button>
+                <Button variant="ghost" type="submit">
+                  Update
+                </Button>
+              </Stack>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
     </motion.Box>
   );
 };

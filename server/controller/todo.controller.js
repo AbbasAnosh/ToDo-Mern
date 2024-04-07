@@ -3,9 +3,24 @@ import Joi from "joi";
 
 export const GetTodo = async (req, res) => {
   try {
-    const todos = await todoModel.find().sort({ date: -1 });
-    res.send(todos);
-    console.log(req.user);
+    let { page, limit } = req.query;
+
+    page = parseInt(page, 10) || 1;
+    limit = parseInt(limit, 10) || 3;
+
+    const totalTodos = await todoModel.countDocuments();
+    const totalPages = Math.ceil(totalTodos / limit);
+
+    const todos = await todoModel
+      .find()
+      .sort({ date: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      todos,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).send(error.message);
     console.log(error.message);
@@ -27,6 +42,7 @@ export const PostTodo = async (req, res) => {
   const schema = Joi.object({
     id: Joi.string(),
     name: Joi.string().min(2).max(300).required(),
+    description: Joi.string().min(10).max(500).required(),
     author: Joi.string().min(2).max(40),
     completed: Joi.boolean(),
     date: Joi.date(),
@@ -34,10 +50,11 @@ export const PostTodo = async (req, res) => {
   const { error } = schema.validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const { name, author, id, completed, date } = req.body;
+  const { name, description, author, id, completed, date } = req.body;
 
   let newTodo = new todoModel({
     name,
+    description,
     author,
     id,
     completed,
@@ -57,6 +74,7 @@ export const PostTodo = async (req, res) => {
 export const PutTodo = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(2).max(300).required(),
+    description: Joi.string().min(10).max(500).required(),
     author: Joi.string().min(2).max(40),
     id: Joi.string(),
     completed: Joi.boolean(),
@@ -68,11 +86,11 @@ export const PutTodo = async (req, res) => {
   try {
     const todo = await todoModel.findById(req.params.id);
     if (!todo) return res.status(404).send("todo not found)");
-    const { name, author, id, completed, date } = req.body;
+    const { name, description, author, id, completed, date } = req.body;
 
     const updatedTodo = await todoModel.findByIdAndUpdate(
       req.params.id,
-      { name, author, id, completed, date },
+      { name, description, author, id, completed, date },
       {
         new: true,
       }
