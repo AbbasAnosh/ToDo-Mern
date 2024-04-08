@@ -60,7 +60,6 @@ export const PostTodo = async (req, res) => {
     completed,
     date,
   });
-
   try {
     newTodo = await newTodo.save();
     res.send(newTodo);
@@ -72,10 +71,11 @@ export const PostTodo = async (req, res) => {
 };
 
 export const PutTodo = async (req, res) => {
+  console.log(req.body, "afdsfsafds");
   const schema = Joi.object({
-    name: Joi.string().min(2).max(300).required(),
-    description: Joi.string().min(10).max(500).required(),
-    author: Joi.string().min(2).max(40),
+    name: Joi.string().allow(""),
+    description: Joi.string().allow(""),
+    author: Joi.string().allow(""),
     id: Joi.string(),
     completed: Joi.boolean(),
     date: Joi.date(),
@@ -97,6 +97,37 @@ export const PutTodo = async (req, res) => {
     );
     res.send(updatedTodo);
     console.log("todo updated successfully");
+  } catch (error) {
+    res.status(500).send(error.message);
+    console.log(error.message);
+  }
+};
+
+export const PutCompleted = async (req, res) => {
+  console.log(req.body, "fasfsdfdsf");
+  const schema = Joi.object({
+    completed: Joi.boolean().required(),
+    name: Joi.string(),
+    description: Joi.string(),
+    author: Joi.string(),
+    id: Joi.string(),
+    date: Joi.date(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  try {
+    const todo = await todoModel.findById(req.params.id);
+    if (!todo) return res.status(404).send("todo not found");
+    const { name, description, author, id, completed, date } = req.body;
+
+    const updatedCompleted = await todoModel.findByIdAndUpdate(
+      req.params.id,
+      { description, name, author, id, completed, date },
+      { new: true }
+    );
+    res.send(updatedCompleted);
+    console.log("todo updatedCompleted successfully");
   } catch (error) {
     res.status(500).send(error.message);
     console.log(error.message);

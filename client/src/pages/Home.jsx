@@ -18,7 +18,7 @@ const Home = () => {
     >
       <Box
         width="100%"
-        px="1.5rem"
+        px={{ base: "0", md: "1.5rem" }}
         maxWidth="3xl"
         paddingTop={"90px"}
         my="auto"

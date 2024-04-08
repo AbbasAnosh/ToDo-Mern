@@ -20,8 +20,8 @@ const CheckBox = (props) => {
         e.preventDefault();
         props.onChange(e);
       }}
-      px={4}
-      py={3}
+      px={{ base: 1, md: 4 }}
+      py={{ base: 1, md: 3 }}
       cursor="pointer"
       {...htmlProps}
     >
@@ -33,15 +33,15 @@ const CheckBox = (props) => {
         bgGradient="linear(135deg, var(--chakra-colors-border) 50%,#6ebaf8 51%, #a47ee1 100%)"
         _hover={{ bgPos: "100% 100%" }}
         transition="all 0.2s ease-in"
-        minW={6}
-        h={6}
+        minW={{ base: 4, md: 6 }}
+        h={{ base: 4, md: 6 }}
         {...getCheckboxProps()}
       >
         <Center
           bgColor={state.isChecked ? "transparent" : "background"}
           transitionDuration="0.3s"
-          w={5}
-          h={5}
+          w={{ base: 3, md: 5 }}
+          h={{ base: 3, md: 5 }}
           rounded="full"
         >
           <CheckIcon

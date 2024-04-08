@@ -10,6 +10,19 @@ import {
 import axios from "axios";
 import { motion } from "framer-motion";
 
+import { extendTheme } from "@chakra-ui/react";
+
+const breakpoints = {
+  base: "0px",
+  sm: "320px",
+  md: "768px",
+  lg: "960px",
+  xl: "1200px",
+  "2xl": "1536px",
+};
+
+const theme = extendTheme({ breakpoints });
+
 const CreateTodo = ({ onAddTodo }) => {
   const [todo, setTodo] = useState({
     name: "",
@@ -49,6 +62,7 @@ const CreateTodo = ({ onAddTodo }) => {
         duration: 5000,
         isClosable: true,
       });
+      console.log(response);
     } catch (error) {
       console.error("Failed to add todo", error);
       toast({
@@ -64,7 +78,7 @@ const CreateTodo = ({ onAddTodo }) => {
   return (
     <form onSubmit={handleSubmit}>
       <FormControl
-        display="flex"
+        display={{ base: "block", md: "flex" }}
         alignItems="end"
         gap="2"
         padding="1rem"
@@ -85,11 +99,11 @@ const CreateTodo = ({ onAddTodo }) => {
               name="name"
               value={todo.name}
               onChange={handleChange}
-              size="md"
+              size={{ base: "sm", md: "md" }}
               px="4"
               py="6"
               width="auto"
-              minWidth="660px"
+              minWidth={{ base: "100%", md: "660px" }}
               borderBottomLeftRadius="0"
               borderBottomRightRadius="0"
             />
@@ -101,12 +115,21 @@ const CreateTodo = ({ onAddTodo }) => {
               value={todo.description}
               onChange={handleChange}
               placeholder="What needs to be done?"
-              size="sm"
+              size={{ base: "sm", md: "md" }}
+              minWidth={{ base: "100%", md: "660px" }}
             />
           </Stack>
         </motion.div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button colorScheme="blue" px="8" py="6" type="submit">
+          <Button
+            colorScheme="blue"
+            px="8"
+            py={{ base: "2", md: "6" }}
+            mt={{ base: 4, md: 0 }}
+            mr={{ base: 0, md: 4 }}
+            ml={{ base: 4, md: 0 }}
+            type="submit"
+          >
             Add
           </Button>
         </motion.div>

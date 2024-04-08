@@ -123,8 +123,40 @@ const TodoList = ({ isCreated }) => {
     });
   };
 
+  const toggleDone = async (id, completed) => {
+    try {
+      setToDos((prevToDos) =>
+        prevToDos.map((todo) =>
+          todo.id === id ? { ...todo, completed } : todo
+        )
+      );
+
+      await axios.put(`http://localhost:3000/api/todos/${id}`, {
+        completed: completed,
+      });
+      getTodos();
+      toast({
+        title: "Todo updated.",
+        description: "Your todo has been updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating todo status.",
+        description: "Failed to update todo status.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      console.error("Error updating todo:", error);
+    }
+  };
+
   return (
     <motion.Box
+      as="div"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -133,57 +165,93 @@ const TodoList = ({ isCreated }) => {
       {toDos.map((todo) => (
         <SlideFade in={true} offsetY="20px" key={todo._id}>
           <Box
-            p={5}
+            as="div"
+            p={4}
             shadow="md"
             borderWidth="1px"
             margin={4}
             borderRadius="lg"
             bg={bg}
             display="flex"
+            flexDirection={{ base: "column", md: "row" }}
             justifyContent="space-between"
-            alignItems="center"
+            alignItems={{ base: "flex-start", md: "center" }}
             layout
           >
             <Box display="flex" flexDirection="column" alignItems="flex-start">
-              <HStack maxWidth="100%" marginBottom="4">
-                <CheckBox isChecked={todo.completed} />
-                <VStack
-                  alignItems="self-start"
-                  divider={<StackDivider borderColor="gray.200" />}
+              <VStack spacing={2} align="stretch">
+                <CheckBox
+                  maxWidth="100%"
+                  overflowX="auto"
+                  isChecked={todo.completed}
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleDone(todo._id, !todo.completed);
+                  }}
                 >
-                  <Text as={todo.completed ? "s" : ""}>{todo.name}</Text>
-                  <Text as={todo.completed ? "s" : ""}>{todo.description}</Text>
-                </VStack>
-              </HStack>
+                  <VStack
+                    spacing={1}
+                    align="start"
+                    divider={<StackDivider borderColor="gray.200" />}
+                  >
+                    <Text
+                      decoration={todo.completed && "line-through"}
+                      overflowWrap="break-word"
+                      transitionDuration="0.3s"
+                      color={todo.completed && "GrayText"}
+                    >
+                      {todo.name}
+                    </Text>
+                    <Text
+                      decoration={todo.completed && "line-through"}
+                      overflowWrap="break-word"
+                      transitionDuration="0.3s"
+                      color={todo.completed && "GrayText"}
+                    >
+                      {todo.description}
+                    </Text>
+                  </VStack>
+                </CheckBox>
+              </VStack>
               <VStack
                 divider={<StackDivider borderColor="gray.200" />}
-                spacing={2}
-                align="stretch"
+                spacing={1}
+                align="start"
+                mb={2}
               >
-                <Badge colorScheme="green">Author: Abbas Anosh</Badge>
-                <Badge colorScheme="blue">
+                <Badge colorScheme="green" fontSize={{ base: 10, md: 12 }}>
+                  Author: Abbas Anosh
+                </Badge>
+                <Badge colorScheme="blue" fontSize={{ base: 10, md: 12 }}>
                   Date: {moment(todo.date).format("MMM Do YY")}
                 </Badge>
               </VStack>
             </Box>
             <Box>
               <Stack
-                spacing={2}
-                direction="column"
+                direction={{ base: "row", md: "row" }}
+                mt={2}
+                justify="center"
                 align="center"
-                justifyContent="center"
               >
                 <IconButton
                   icon={<EditIcon />}
                   colorScheme="blue"
                   onClick={() => handleEdit(todo)}
                   aria-label="Edit Todo"
+                  fontSize={{ base: 16, md: 20 }}
+                  w={{ base: 8, md: 10 }}
+                  h={{ base: 8, md: 10 }}
                 />
                 <IconButton
                   icon={<DeleteIcon />}
                   colorScheme="red"
                   onClick={() => handleDelete(todo._id)}
                   aria-label="Delete Todo"
+                  fontSize={{ base: 16, md: 20 }}
+                  w={{ base: 8, md: 10 }}
+                  h={{ base: 8, md: 10 }}
                 />
               </Stack>
             </Box>
@@ -197,21 +265,25 @@ const TodoList = ({ isCreated }) => {
         marginTop="10"
         alignItems="center"
       >
-        <Button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          isDisabled={currentPage <= 1}
-        >
-          Previous
-        </Button>
-        <Text marginX="4">
-          Page {currentPage} of {totalPages}
-        </Text>
-        <Button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          isDisabled={currentPage >= totalPages}
-        >
-          Next
-        </Button>
+        <Stack direction="row" justify="center" align="center" mt={4}>
+          <Button
+            fontSize={{ base: 15, md: 20 }}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            isDisabled={currentPage <= 1}
+          >
+            Previous
+          </Button>
+          <Text marginX="4" fontSize={{ base: 15, md: 20 }}>
+            Page {currentPage} of {totalPages}
+          </Text>
+          <Button
+            fontSize={{ base: 15, md: 20 }}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            isDisabled={currentPage >= totalPages}
+          >
+            Next
+          </Button>
+        </Stack>
       </Box>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -245,10 +317,19 @@ const TodoList = ({ isCreated }) => {
 
             <ModalFooter>
               <Stack direction="row" align="center">
-                <Button colorScheme="blue" mr={1} onClick={onClose}>
+                <Button
+                  fontSize={{ base: 15, md: 20 }}
+                  colorScheme="blue"
+                  mr={1}
+                  onClick={onClose}
+                >
                   Close
                 </Button>
-                <Button variant="ghost" type="submit">
+                <Button
+                  fontSize={{ base: 15, md: 20 }}
+                  variant="ghost"
+                  type="submit"
+                >
                   Update
                 </Button>
               </Stack>
