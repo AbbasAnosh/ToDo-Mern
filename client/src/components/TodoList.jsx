@@ -39,7 +39,12 @@ const TodoList = ({ isCreated }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [data, setData] = useState({ name: "", completed: false, id: null });
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+    completed: false,
+    id: null,
+  });
   const toast = useToast();
   const bg = useColorModeValue("white", "gray.800");
 

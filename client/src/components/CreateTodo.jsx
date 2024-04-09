@@ -10,19 +10,6 @@ import {
 import axios from "axios";
 import { motion } from "framer-motion";
 
-import { extendTheme } from "@chakra-ui/react";
-
-const breakpoints = {
-  base: "0px",
-  sm: "320px",
-  md: "768px",
-  lg: "960px",
-  xl: "1200px",
-  "2xl": "1536px",
-};
-
-const theme = extendTheme({ breakpoints });
-
 const CreateTodo = ({ onAddTodo }) => {
   const [todo, setTodo] = useState({
     name: "",
@@ -93,9 +80,10 @@ const CreateTodo = ({ onAddTodo }) => {
         >
           <Stack>
             <Input
-              variant="filled"
               placeholder="What is the name of the todo?"
               isRequired
+              borderColor={"border"}
+              borderWidth="1px"
               name="name"
               value={todo.name}
               onChange={handleChange}
@@ -106,17 +94,20 @@ const CreateTodo = ({ onAddTodo }) => {
               minWidth={{ base: "100%", md: "660px" }}
               borderBottomLeftRadius="0"
               borderBottomRightRadius="0"
+              backgroundColor="background"
             />
 
             <Textarea
-              variant="filled"
               isRequired
+              borderColor={"border"}
+              borderWidth="1px"
               name="description"
               value={todo.description}
               onChange={handleChange}
               placeholder="What needs to be done?"
               size={{ base: "sm", md: "md" }}
               minWidth={{ base: "100%", md: "660px" }}
+              backgroundColor="background"
             />
           </Stack>
         </motion.div>

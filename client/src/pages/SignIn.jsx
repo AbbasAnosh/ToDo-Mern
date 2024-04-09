@@ -74,7 +74,13 @@ const SignIn = () => {
         py={{ base: "12", md: "24" }}
         px={{ base: "0", sm: "8" }}
       >
-        <Stack spacing="8">
+        <Stack
+          spacing="8"
+          backgroundColor={"background"}
+          boxShadow={{ base: "none", sm: "md" }}
+          pt={7}
+          borderRadius={"xl"}
+        >
           <Stack spacing="6">
             <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
               <Heading size={{ base: "xs", md: "sm" }}>
@@ -91,11 +97,9 @@ const SignIn = () => {
             transition={{ duration: 0.5 }}
           >
             <Box
-              py={{ base: "0", sm: "8" }}
+              py={{ base: "6", sm: "8" }}
               px={{ base: "4", sm: "10" }}
-              bg={{ base: "transparent", sm: "purple.500" }}
-              boxShadow={{ base: "none", sm: "md" }}
-              borderRadius={{ base: "none", sm: "xl" }}
+              zIndex={10}
             >
               <Stack spacing="6">
                 <Stack spacing="5">
@@ -126,6 +130,7 @@ const SignIn = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleSubmit}
+                    colorScheme="blue"
                   >
                     Sign In
                   </Button>

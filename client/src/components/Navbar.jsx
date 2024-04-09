@@ -6,33 +6,43 @@ import {
   Button,
   Stack,
   Collapse,
-  Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 
 import ThemeToggle from "../components/ThemeToggle";
 import { Link } from "react-router-dom";
-import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
-
+  const { colorMode } = useColorMode();
   return (
-    <Box>
+    <Box maxWidth={"4xl"} mr={"auto"} ml={"auto"}>
+      <Box
+        height={["400px", "500px"]}
+        backgroundImage={[
+          `url(/background/bg-image3-${colorMode}.jpg)`,
+          `url(/background/bg-image3-${colorMode}.jpg)`,
+        ]}
+        style={{
+          width: "100%",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "none",
+          position: "absolute",
+          zIndex: "-1",
+          left: "0",
+          top: "0",
+        }}
+      />
       <Flex
-        bg={useColorModeValue("white", "gray.800")}
         color={useColorModeValue("gray.600", "white")}
         minH={"60px"}
         py={{ base: 2 }}
         px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={"solid"}
-        borderColor={useColorModeValue("gray.200", "gray.900")}
         align={"center"}
       >
         <Flex
@@ -53,12 +63,14 @@ export default function WithSubnavigation() {
           <Link to="/">
             <Text
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
-              color={useColorModeValue("teal.500", "white")}
-              backgroundColor="teal.500"
+              textColor={"heroGradientEnd"}
+              backgroundColor="background"
               paddingX="20px"
               paddingY="10px"
               borderRadius={5}
+              fontSize={20}
               size={["md", "lg", "xl"]}
+              fontWeight={600}
             >
               Todo
             </Text>
@@ -72,18 +84,28 @@ export default function WithSubnavigation() {
           spacing={6}
           mr={3}
         >
-          <Button as={"a"} fontSize={"sm"} fontWeight={400} variant={"link"}>
-            <Link to="signin">Sign In</Link>
+          <Button
+            fontSize={"sm"}
+            fontWeight={600}
+            backgroundColor={"pagebg"}
+            textColor={"heroGradientStart"}
+            display={{ base: "none", md: "inline-flex" }}
+            _hover={{
+              backgroundColor: "background",
+            }}
+          >
+            <Link to="/signin" textDecoration="none">
+              Sign In
+            </Link>
           </Button>
           <Button
-            as={"a"}
             display={{ base: "none", md: "inline-flex" }}
             fontSize={"sm"}
             fontWeight={600}
-            color={"white"}
-            bg={"pink.400"}
+            textColor={"heroGradientStart"}
+            backgroundColor={"pagebg"}
             _hover={{
-              bg: "pink.300",
+              backgroundColor: "background",
             }}
           >
             <Link to="/signup">Sign Up</Link>
@@ -95,154 +117,25 @@ export default function WithSubnavigation() {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <Box p={4} bg={"#2C313D"}>
+          <Stack maxWidth={"max-content"}>
+            <Button>
+              <Link to="/signin">Sign In</Link>
+            </Button>
+            <Button
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"white"}
+              bg={"pink.400"}
+              _hover={{
+                bg: "pink.300",
+              }}
+            >
+              <Link to="/signup">Sign Up</Link>
+            </Button>
+          </Stack>
+        </Box>
       </Collapse>
     </Box>
   );
 }
-
-const MobileNav = () => {
-  return (
-    <Stack
-      bg={useColorModeValue("white", "gray.800")}
-      p={4}
-      display={{ md: "none" }}
-    >
-      {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
-      ))}
-    </Stack>
-  );
-};
-
-const MobileNavItem = ({ label, children, href }) => {
-  const { isOpen, onToggle } = useDisclosure();
-
-  return (
-    <Stack spacing={4} onClick={children && onToggle}>
-      <Box
-        py={2}
-        as="a"
-        href={href ?? "#"}
-        justifyContent="space-between"
-        alignItems="center"
-        _hover={{
-          textDecoration: "none",
-        }}
-      >
-        <Text
-          fontWeight={600}
-          color={useColorModeValue("gray.600", "gray.200")}
-        >
-          {label}
-        </Text>
-        {children && (
-          <Icon
-            as={ChevronDownIcon}
-            transition={"all .25s ease-in-out"}
-            transform={isOpen ? "rotate(180deg)" : ""}
-            w={6}
-            h={6}
-          />
-        )}
-      </Box>
-
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
-        <Stack
-          mt={2}
-          pl={4}
-          borderLeft={1}
-          borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "gray.700")}
-          align={"start"}
-        >
-          {children &&
-            children.map((child) => (
-              <Box as="a" key={child.label} py={2} href={child.href}>
-                {child.label}
-              </Box>
-            ))}
-        </Stack>
-      </Collapse>
-    </Stack>
-  );
-};
-
-const NAV_ITEMS = [
-  {
-    label: "New & Noteworthy",
-    subLabel: "Up-and-coming Designers",
-    href: "#",
-  },
-];
-
-// import React from "react";
-// import {
-//   Box,
-//   Flex,
-//   Heading,
-//   useColorMode,
-//   HStack,
-//   Button,
-// } from "@chakra-ui/react";
-// import ThemeToggle from "../components/ThemeToggle";
-// import { Link } from "react-router-dom";
-
-// const Navbar = () => {
-//   const { colorMode } = useColorMode();
-
-//   return (
-//     <Box
-//       as="nav"
-//       height={["300px", "400px"]}
-//       backgroundImage={[
-//         `url(/background/bg-image3-${colorMode}.jpg)`,
-//         `url(/background/bg-image3-${colorMode}.jpg)`,
-//       ]}
-//       style={{
-//         width: "100%",
-//         backgroundPosition: "center",
-//         backgroundSize: "cover",
-//         backgroundRepeat: "no-repeat",
-//         position: "relative",
-//         zIndex: "0",
-//         left: "0",
-//         top: "0",
-//       }}
-//     >
-//       <Flex
-//         align="center"
-//         justify="space-between"
-//         wrap="wrap"
-//         w="100%"
-//         p={5}
-//         position="relative"
-//         zIndex="1"
-//       >
-//         <Heading
-//           letterSpacing={"tighter"}
-//           textTransform="uppercase"
-//           color="white"
-//           backgroundColor="teal.500"
-//           paddingX="10px"
-//           paddingY="5px"
-//           borderRadius={5}
-//           size={["md", "lg", "xl"]}
-//         >
-//           <Link to="/">Todo</Link>
-//         </Heading>
-//         <HStack spacing={4}>
-//           <ThemeToggle />
-//           <Button colorScheme="teal" variant="solid">
-//             <Link to="/signin">Sign In</Link>
-//           </Button>
-//           <Button colorScheme="teal" variant="outline">
-//             <Link to="/signup">Sign Up</Link>
-//           </Button>
-//         </HStack>
-//       </Flex>
-//     </Box>
-//   );
-// };
-
-// export default Navbar;

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { Box } from "@chakra-ui/react";
 import CreateTodo from "../components/CreateTodo";
 import TodoList from "../components/TodoList";
@@ -10,7 +9,6 @@ const Home = () => {
     <Box
       width="100%"
       overflowY="auto"
-      bgColor="pagebg"
       display="flex"
       flexDirection="column"
       alignItems="center"
