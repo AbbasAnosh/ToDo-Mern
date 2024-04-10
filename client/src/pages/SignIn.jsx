@@ -48,7 +48,6 @@ const SignIn = () => {
           },
         }
       );
-
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -70,6 +69,7 @@ const SignIn = () => {
     >
       <Container
         maxW="lg"
+        mt={"24"}
         zIndex={1}
         py={{ base: "12", md: "24" }}
         px={{ base: "0", sm: "8" }}

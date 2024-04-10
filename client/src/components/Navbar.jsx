@@ -10,13 +10,14 @@ import {
   useBreakpointValue,
   useDisclosure,
   useColorMode,
+  HStack,
 } from "@chakra-ui/react";
 
 import ThemeToggle from "../components/ThemeToggle";
 import { Link } from "react-router-dom";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
-export default function WithSubnavigation() {
+export const Navbar = ({ user }) => {
   const { isOpen, onToggle } = useDisclosure();
   const { colorMode } = useColorMode();
   return (
@@ -81,35 +82,55 @@ export default function WithSubnavigation() {
           flex={{ base: 1, md: 0 }}
           justify={"flex-end"}
           direction={"row"}
+          alignItems={"center"}
           spacing={6}
           mr={3}
         >
-          <Button
-            fontSize={"sm"}
-            fontWeight={600}
-            backgroundColor={"pagebg"}
-            textColor={"heroGradientStart"}
-            display={{ base: "none", md: "inline-flex" }}
-            _hover={{
-              backgroundColor: "background",
-            }}
-          >
+          {user ? (
+            <HStack>
+              <Text>John Doe</Text>
+              <Button
+                fontSize={"sm"}
+                fontWeight={600}
+                textColor={"heroGradientStart"}
+                backgroundColor={"pagebg"}
+                _hover={{
+                  backgroundColor: "background",
+                }}
+              >
+                Logout
+              </Button>
+            </HStack>
+          ) : (
             <Link to="/signin" textDecoration="none">
-              Sign In
+              <Button
+                fontSize={"sm"}
+                fontWeight={600}
+                backgroundColor={"pagebg"}
+                textColor={"heroGradientStart"}
+                display={{ base: "none", md: "inline-flex" }}
+                _hover={{
+                  backgroundColor: "background",
+                }}
+              >
+                Sign In
+              </Button>
             </Link>
-          </Button>
-          <Button
-            display={{ base: "none", md: "inline-flex" }}
-            fontSize={"sm"}
-            fontWeight={600}
-            textColor={"heroGradientStart"}
-            backgroundColor={"pagebg"}
-            _hover={{
-              backgroundColor: "background",
-            }}
-          >
-            <Link to="/signup">Sign Up</Link>
-          </Button>
+          )}
+          <Link to="/signup">
+            <Button
+              display={{ base: "none", md: "inline-flex" }}
+              fontSize={"sm"}
+              fontWeight={600}
+              textColor={"heroGradientStart"}
+              backgroundColor={"pagebg"}
+              _hover={{
+                backgroundColor: "background",
+              }}
+            >
+              Sign Up
+            </Button>
+          </Link>
         </Stack>
         <Stack>
           <ThemeToggle />
@@ -138,4 +159,4 @@ export default function WithSubnavigation() {
       </Collapse>
     </Box>
   );
-}
+};
