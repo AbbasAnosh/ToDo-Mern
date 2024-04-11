@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,7 +14,6 @@ import {
 import { motion } from "framer-motion";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -22,7 +21,15 @@ const SignUp = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const { login } = useAuth();
+  useEffect(() => {
+    handleGetRegisteredUser();
+  }, []);
+
+  const handleGetRegisteredUser = async () => {
+    await axios.get("http://localhost:3000/api/registereduser").then((res) => {
+      console.log(res);
+    });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -52,19 +59,10 @@ const SignUp = () => {
           },
         }
       );
-      // const data = await res.json();
-      // if (res.status === 200) {
-      //   login(data.token, data.user);
-      //   navigate("/");
-      //   toast({
-      //     title: "Sign up successful",
-      //     status: "success",
-      //     duration: 5000,
-      //     isClosable: true,
-      //   });
-      // }
-      setFormData({ name: "", email: "", password: "" });
+
       setLoading(false);
+      setFormData("");
+      handleGetRegisteredUser();
       navigate("/signin");
       console.log(res);
       return toast({

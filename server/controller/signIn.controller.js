@@ -27,9 +27,10 @@ export const SignIn = async (req, res) => {
         name: user.name,
         email: user.email,
       },
-      secretKey
+      secretKey,
+      { expiresIn: "1hr" }
     );
-    res.send({ token });
+    res.send({ token, user: { name: user.name, email: user.email } });
   } catch (error) {
     res.status(400).send(error.message);
     console.log(error.message);

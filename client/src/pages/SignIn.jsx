@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -19,7 +19,18 @@ const SignIn = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    handleGetRegisteredUser();
+  }, []);
+
+  const handleGetRegisteredUser = async () => {
+    await axios.get("http://localhost:3000/api/registereduser").then((res) => {
+      console.log(res);
+    });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -48,7 +59,12 @@ const SignIn = () => {
           },
         }
       );
+      const token = res.data.token;
+      setFormData("");
+      handleGetRegisteredUser();
       navigate("/");
+      window.location.reload();
+      localStorage.setItem("token", token);
     } catch (error) {
       console.error(error);
       toast({
@@ -58,6 +74,8 @@ const SignIn = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
   return (

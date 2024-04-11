@@ -6,6 +6,7 @@ import cors from "cors";
 import router from "./routes/todos.route.js";
 import signUp from "./routes/signUp.route.js";
 import signIn from "./routes/signIn.route.js";
+import registeredUser from "./routes/registeredUser.route.js";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.get("/api/todo", (req, res) => {
 app.use("/api/todos", router);
 app.use("/api/signup", signUp);
 app.use("/api/signin", signIn);
+app.use("/api/registereduser", registeredUser);
 
 const connection = process.env.api_key;
 const port = process.env.PORT || 5000;

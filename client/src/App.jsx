@@ -1,27 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import Home from "./pages/Home";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import { Navbar } from "./components/Navbar";
 
 const App = () => {
-  const user = false;
-
+  const isUserSignedIn = !!localStorage.getItem("token");
   return (
     <Router>
-      <Navbar user={user} />
+      <Navbar />
       <Routes>
-        <Route path="/" element={user ? <Home /> : <Navigate to="/signin" />} />
-        <Route
-          path="/signin"
-          element={user ? <Navigate to="/" /> : <SignIn />}
-        />
+        {isUserSignedIn && <Route path="/" element={<Home />} />}
+        <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
     </Router>
