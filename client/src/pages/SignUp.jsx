@@ -93,7 +93,7 @@ const SignUp = () => {
       <Container
         maxW="lg"
         zIndex={1}
-        mt={"24"}
+        mt={"27"}
         py={{ base: "12", md: "24" }}
         px={{ base: "0", sm: "8" }}
       >
@@ -110,7 +110,10 @@ const SignUp = () => {
                 Register your account
               </Heading>
               <Text color="fg.muted">
-                Do you have an account? <Link to="/signin">Sign in</Link>
+                Do you have an account?{" "}
+                <Link to="/signin" backgroundColor="background">
+                  Sign in
+                </Link>
               </Text>
             </Stack>
           </Stack>
