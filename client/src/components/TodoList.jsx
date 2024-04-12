@@ -229,7 +229,7 @@ const TodoList = ({ isCreated }) => {
                   Author: Abbas Anosh
                 </Badge>
                 <Badge colorScheme="blue" fontSize={{ base: 10, md: 12 }}>
-                  Date: {moment(todo.date).format("MMM Do YY")}
+                  Date: {moment(todo.date).format("MMMM Do YYYY, h:mm:ss a")}
                 </Badge>
               </VStack>
             </Box>

@@ -6,14 +6,22 @@ import {
   useToast,
   Textarea,
   Stack,
+  InputGroup,
+  InputLeftAddon,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import DatePicker from "react-datepicker";
+import { CalendarIcon } from "@chakra-ui/icons";
+
+import "react-datepicker/dist/react-datepicker.css";
+// import "./DatePickerStyles.css";
 
 const CreateTodo = ({ onAddTodo }) => {
   const [todo, setTodo] = useState({
     name: "",
     description: "",
+    date: new Date(),
     completed: false,
   });
   const toast = useToast();
@@ -26,13 +34,19 @@ const CreateTodo = ({ onAddTodo }) => {
     });
   };
 
+  const handleDateChange = (date) => {
+    setTodo({
+      ...todo,
+      date: date,
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newData = {
       name: todo.name,
       description: todo.description,
       completed: todo.completed,
-      date: new Date(),
+      date: todo.date,
     };
 
     try {
@@ -109,6 +123,22 @@ const CreateTodo = ({ onAddTodo }) => {
               minWidth={{ base: "100%", md: "660px" }}
               backgroundColor="background"
             />
+            <InputGroup>
+              <InputLeftAddon
+                pointerEvents="none"
+                children={<CalendarIcon color="gray.300" />}
+                backgroundColor="pagebg"
+              />
+              <DatePicker
+                selected={todo.date}
+                onChange={handleDateChange}
+                showTimeSelect
+                timeIntervals={60}
+                dateFormat="MMMM d, yyyy h:mm aa"
+                customInput={<Input backgroundColor="background" />}
+                withPortal
+              />
+            </InputGroup>
           </Stack>
         </motion.div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
