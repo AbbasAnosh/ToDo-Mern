@@ -36,13 +36,26 @@ const CreateTodo = ({ onAddTodo }) => {
   };
 
   const handleTimeChange = (e) => {
-    let value = e.target.value;
-    value = value.replace(/(\d{2})(?=\d)/g, "$1:").substring(0, 8);
+    const [hours, minutes] = e.target.value
+      .split(":")
+      .map((num) => parseInt(num, 10));
+
+    const validHours = !isNaN(hours) ? Math.max(0, Math.min(23, hours)) : 0;
+
+    const validMinutes = !isNaN(minutes)
+      ? Math.max(0, Math.min(59, minutes))
+      : 0;
+
+    const formattedTime = `${validHours
+      .toString()
+      .padStart(2, "0")}:${validMinutes.toString().padStart(2, "0")}`;
+
     setTodo({
       ...todo,
-      time: value,
+      time: formattedTime,
     });
   };
+
   const handleDateChange = (date) => {
     setTodo({
       ...todo,
@@ -54,10 +67,9 @@ const CreateTodo = ({ onAddTodo }) => {
     const timeParts = todo.time.split(":");
     const hours = parseInt(timeParts[0], 10);
     const minutes = parseInt(timeParts[1], 10);
-    const seconds = timeParts.length > 2 ? parseInt(timeParts[2], 10) : 0;
 
     const dateTime = new Date(todo.date.getTime());
-    dateTime.setHours(hours, minutes, seconds);
+    dateTime.setHours(hours, minutes);
 
     const newData = {
       name: todo.name,
@@ -182,12 +194,10 @@ const CreateTodo = ({ onAddTodo }) => {
                 />
                 <Input
                   id="todotime"
-                  placeholder="HH:MM:SS"
+                  placeholder="HH:MM"
                   name="time"
                   value={todo.time}
                   onChange={handleTimeChange}
-                  pattern="\d{2}:\d{2}:\d{2}"
-                  maxLength="8"
                   focusBorderColor="blue.500"
                   errorBorderColor="red.300"
                 />
